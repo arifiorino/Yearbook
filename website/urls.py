@@ -15,8 +15,14 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
+from website import views as website_views
+from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^signup/$', core_views.signup, name='signup'),
+    url(r'^signup/$', website_views.signup_view, name='signup'),
+    url(r'^login/$', auth_views.LoginView.as_view(), name='login'),
+    url(r'^logout/$', auth_views.LogoutView.as_view(), name='logout'),
+    url(r'^yearbook/(?P<secretkey>.+)$', website_views.yearbook_view, name='yearbook'),
+    url(r'^myyearbook/$', website_views.yearbook_view, name='yearbook'),
 ]

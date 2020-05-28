@@ -1,21 +1,43 @@
-<html>
-  <head>
-    <link rel="stylesheet" href="styles.css">
-  </head>
-  <body>
+{% extends 'base.html' %}
 
-  <canvas id="can" width="400" height="400" style="position:absolute;top:10%;left:10%;border:2px solid;"></canvas>
+{% block title %}Yearbook{% endblock %}
+
+{% block content %}
+  <head>
+  </head>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <canvas id="can" width="400" height="400" style="border:2px solid;"></canvas>
+  <script type="text/javascript">
+  var token = '{{csrf_token}}';
+  function SubForm (){
+    console.log(texts[texts.length-1][0][0]);
+    $.ajax({
+	headers: { "X-CSRFToken": token },
+        type:'post',
+	    data:{'pointX' : (texts[texts.length-1][0][0]), 'pointY' : (texts[texts.length-1][0][1]), 'text': (texts[texts.length-1][1])},
+        success:function(){
+            console.log("worked");
+        }
+    });
+  }
+  </script>
+  <textarea id="textBox" name="text" rows="4" cols="50"></textarea><button onclick="SubForm();">Submit</button>
   <script type="text/javascript">
   var texts = [];
+  {% for text in text_points %}
+    texts.push([[{{ text.0.0 }}, {{text.0.1}}], "{{text.1}}"]);
+  {% endfor %}
+  console.log(texts)
   var cursorSize = 5;
   
   canvas = document.getElementById('can');
+  textBox = document.getElementById('textBox');
   ctx = canvas.getContext("2d");
   w = canvas.width;
   h = canvas.height;
   canvas.addEventListener("mousedown", makeText, false);
-  document.onkeypress = addText;
-  document.onkeydown = checkBackspace;
+  textBox.onkeypress = addText;
+  textBox.onkeydown = checkBackspace;
 
   function drawCursor(text){
     let x = text[0][0];
@@ -61,6 +83,7 @@
     texts[texts.length-1][1] += String.fromCharCode(e.keyCode);
     draw();
   }
+  draw();
   
   </script>
-</body></html>
+{% endblock %}
